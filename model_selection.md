@@ -700,7 +700,7 @@ ggplot(test, aes(x = patient, y = E2, fill = E1)) + geom_bar(stat = "identity") 
     scales = "free_x", space = "free")
 ```
 
-![](model_selection_files/figure-html/Mosiac plot-1.png)<!-- -->
+![](model_selection_files/figure-html/Mosiac_plot-1.png)<!-- -->
 
 ## 4. The presence of APOBEC signatures SBS2/13 in the small intestine
 

@@ -304,7 +304,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = indel_count_adj))+geom_p
 
 
 ## 3. Mosiac plot for all signatures
-```{r Mosiac plot,fig.width = 10, fig.height=4}
+```{r Mosiac_plot,fig.width = 10, fig.height=4}
 df=exposure_matrix_crypts[rownames(exposure_matrix_crypts) %in% data$sample,]
 df$patient = rownames(df)
 df$age =data$age
