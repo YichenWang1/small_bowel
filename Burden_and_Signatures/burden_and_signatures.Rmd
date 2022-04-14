@@ -12,7 +12,7 @@ knitr::opts_chunk$set(tidy.opts=list(width.cutoff=70), tidy=TRUE,warning = FALSE
 knitr::opts_knit$set(root.dir = '/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD')
 ```
 
-This analysis aims to assess 1) the rate of accumulation of SBS and ID mutation, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.
+This analysis aims to assess 1) the rate of SBS and ID mutations, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.
 
 We build linear mixed models for estimating mutation rates. Model parameters encoded are: age, biopsy region (duodenum, jejunum, ileum) , celieac condition (having a coeliac history or not) and  patient. We have corrected for coverage by normalising ID and SBS mutational burden according to the sensitivity of detection in each samples before modelling, therfore we do not include it as a parameter for modelling.
 
@@ -69,7 +69,7 @@ dim(df_regression)
 mean(data$coverage)
 
 # Load SBS matrix
-sbs<-read.table('./data/sbs_small_bowel_perbranch.txt',check.names = F)
+sbs<-read.table('./data/sbs/sbs_on_branch.txt',check.names = F)
 # Exclude Brunner's glands
 sbs=sbs[!(rownames(sbs) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
 # Total SBS mutations
@@ -77,14 +77,14 @@ sum(sbs)
 
 
 # Load Indel matrix
-indel<-read.table('./data/indel/indel_input_for_hdp.txt',check.names = F)
+indel<-read.table('./data/indel/indel_on_branch.txt',check.names = F)
 # Exclude Brunner's glands
 indel=indel[!(rownames(indel) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
 # Total IDmutations
 sum(indel)
 ```
 
-## 2. Hypothesis testing of linear mixed effects model
+## 2. Hypothesis testing of linear mixed effects models
 ### Substitutions
 
 First, we set up a linear mixed model with age as a fixed effect and patient as random effect.

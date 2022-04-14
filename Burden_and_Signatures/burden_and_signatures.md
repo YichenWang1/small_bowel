@@ -8,7 +8,7 @@ output:
 
 
 
-This analysis aims to assess 1) the rate of accumulation of SBS and ID mutation, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.
+This analysis aims to assess 1) the rate of SBS and ID mutations, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.
 
 We build linear mixed models for estimating mutation rates. Model parameters encoded are: age, biopsy region (duodenum, jejunum, ileum) , celieac condition (having a coeliac history or not) and  patient. We have corrected for coverage by normalising ID and SBS mutational burden according to the sensitivity of detection in each samples before modelling, therfore we do not include it as a parameter for modelling.
 
@@ -101,7 +101,7 @@ mean(data$coverage)
 
 ```r
 # Load SBS matrix
-sbs <- read.table("./data/sbs_small_bowel_perbranch.txt", check.names = F)
+sbs <- read.table("./data/sbs/sbs_on_branch.txt", check.names = F)
 # Exclude Brunner's glands
 sbs = sbs[!(rownames(sbs) %in% c("PD43851_1", "PD43851_4", "PD43851_14")),
     ]
@@ -115,7 +115,7 @@ sum(sbs)
 
 ```r
 # Load Indel matrix
-indel <- read.table("./data/indel/indel_input_for_hdp.txt", check.names = F)
+indel <- read.table("./data/indel/indel_on_branch.txt", check.names = F)
 # Exclude Brunner's glands
 indel = indel[!(rownames(indel) %in% c("PD43851_1", "PD43851_4", "PD43851_14")),
     ]
@@ -127,7 +127,7 @@ sum(indel)
 ## [1] 51256
 ```
 
-## 2. Hypothesis testing of linear mixed effects model
+## 2. Hypothesis testing of linear mixed effects models
 ### Substitutions
 
 First, we set up a linear mixed model with age as a fixed effect and patient as random effect.
@@ -399,7 +399,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = sbs_count_adj)) +
     legend.text = element_text(size = 16))
 ```
 
-![](model_selection_files/figure-html/SBS_plot-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/SBS_plot-1.png)<!-- -->
 
 ### Indels
 As above, we set up a linear mixed model for Indels with age as a fixed effect and patient as random effect.
@@ -664,7 +664,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = indel_count_adj)) +
     legend.text = element_text(size = 16))
 ```
 
-![](model_selection_files/figure-html/Indel_plot-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/Indel_plot-1.png)<!-- -->
 
 
 ## 3. Mosiac plot for all signatures
@@ -700,7 +700,7 @@ ggplot(test, aes(x = patient, y = E2, fill = E1)) + geom_bar(stat = "identity") 
     scales = "free_x", space = "free")
 ```
 
-![](model_selection_files/figure-html/Mosiac_plot-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/Mosiac_plot-1.png)<!-- -->
 
 ## 4. The presence of APOBEC signatures SBS2/13 in the small intestine
 
@@ -756,7 +756,7 @@ ggplot(test[test$E1 == "pos", ]) + geom_bar(aes(x = region, y = E2, fill = E1),
     y = "APOBEC frequency")
 ```
 
-![](model_selection_files/figure-html/small_bowel_vs_colon-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/small_bowel_vs_colon-1.png)<!-- -->
 
 ## 5. Mutational burden for common mutational signatures in the normal small intestine
 We looked into the accumulation of mutational buren across the corhort for SBS1, SBS5, SBS18 and SBS2/13. Other sporadic signatures are too rare for conducting meaningful statistical analysis.
@@ -852,7 +852,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS1)) + geom_point(aes(
     legend.text = element_text(size = 16))
 ```
 
-![](model_selection_files/figure-html/SBS1-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/SBS1-1.png)<!-- -->
 
 ### SBS5
 
@@ -932,7 +932,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS5)) + geom_point(aes(
         legend.text = element_text(size = 16))
 ```
 
-![](model_selection_files/figure-html/SBS5-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/SBS5-1.png)<!-- -->
 
 ### SBS18
 
@@ -1009,7 +1009,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS18)) + geom_point(aes
         legend.text = element_text(size = 16))
 ```
 
-![](model_selection_files/figure-html/SBS18-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/SBS18-1.png)<!-- -->
 
 ### SBS2
 
@@ -1082,7 +1082,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS2)) + geom_point(aes(
         color = "black"), legend.text = element_text(size = 16))
 ```
 
-![](model_selection_files/figure-html/SBS2-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/SBS2-1.png)<!-- -->
 
 
 ### SBS13
@@ -1156,5 +1156,5 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS13)) + geom_point(aes
         color = "black"), legend.text = element_text(size = 16))
 ```
 
-![](model_selection_files/figure-html/SBS13-1.png)<!-- -->
+![](burden_and_signatures_files/figure-html/SBS13-1.png)<!-- -->
 

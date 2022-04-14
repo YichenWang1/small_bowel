@@ -351,7 +351,7 @@ pre code {
 </div>
 
 
-<p>This analysis aims to assess 1) the rate of accumulation of SBS and ID mutation, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.</p>
+<p>This analysis aims to assess 1) the rate of SBS and ID mutations, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.</p>
 <p>We build linear mixed models for estimating mutation rates. Model parameters encoded are: age, biopsy region (duodenum, jejunum, ileum) , celieac condition (having a coeliac history or not) and patient. We have corrected for coverage by normalising ID and SBS mutational burden according to the sensitivity of detection in each samples before modelling, therfore we do not include it as a parameter for modelling.</p>
 <div id="overview-of-dataset" class="section level2">
 <h2>1.Overview of dataset</h2>
@@ -413,7 +413,7 @@ dim(df_regression)</code></pre>
 mean(data$coverage)</code></pre>
 <pre><code>## [1] 25.44526</code></pre>
 <pre class="r"><code># Load SBS matrix
-sbs &lt;- read.table(&quot;./data/sbs_small_bowel_perbranch.txt&quot;, check.names = F)
+sbs &lt;- read.table(&quot;./data/sbs/sbs_on_branch.txt&quot;, check.names = F)
 # Exclude Brunner's glands
 sbs = sbs[!(rownames(sbs) %in% c(&quot;PD43851_1&quot;, &quot;PD43851_4&quot;, &quot;PD43851_14&quot;)),
     ]
@@ -421,7 +421,7 @@ sbs = sbs[!(rownames(sbs) %in% c(&quot;PD43851_1&quot;, &quot;PD43851_4&quot;, &
 sum(sbs)</code></pre>
 <pre><code>## [1] 787109</code></pre>
 <pre class="r"><code># Load Indel matrix
-indel &lt;- read.table(&quot;./data/indel/indel_input_for_hdp.txt&quot;, check.names = F)
+indel &lt;- read.table(&quot;./data/indel/indel_on_branch.txt&quot;, check.names = F)
 # Exclude Brunner's glands
 indel = indel[!(rownames(indel) %in% c(&quot;PD43851_1&quot;, &quot;PD43851_4&quot;, &quot;PD43851_14&quot;)),
     ]
@@ -429,8 +429,8 @@ indel = indel[!(rownames(indel) %in% c(&quot;PD43851_1&quot;, &quot;PD43851_4&qu
 sum(indel)</code></pre>
 <pre><code>## [1] 51256</code></pre>
 </div>
-<div id="hypothesis-testing-of-linear-mixed-effects-model" class="section level2">
-<h2>2. Hypothesis testing of linear mixed effects model</h2>
+<div id="hypothesis-testing-of-linear-mixed-effects-models" class="section level2">
+<h2>2. Hypothesis testing of linear mixed effects models</h2>
 <div id="substitutions" class="section level3">
 <h3>Substitutions</h3>
 <p>First, we set up a linear mixed model with age as a fixed effect and patient as random effect.</p>
