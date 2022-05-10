@@ -6,15 +6,12 @@ library(MutationalPatterns)
 library(BSgenome)
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
-
-library(RColorBrewer)
-getPalette = colorRampPalette(brewer.pal(8, "Set3"))
 library("GenomicRanges")
 library("Rsamtools")
 library("MASS")
 library('vcfR')
 library('ggplot2')
-setwd('/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD/data')
+setwd('/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD/small_bowel/data')
 options(stringsAsFactors = F)
 
 
@@ -143,7 +140,7 @@ find_kataegis <- function (vcf,sample_name,outpath="./rainfall_plot/")
 ## --------------- Identify kataegis and make rainfall plots---------------
 # Load vcf files
 vcf_files <- list.files(path="./snp",
-                        pattern = "*_final_snp.vcf", full.names = TRUE)
+                        pattern = "*_final_snp.vcf$", full.names = TRUE)
 genomeFile = "/Users/yw2/OneDrive - University of Cambridge/PhD/data/public/genome.fa"
 
 for (i in 1:length(vcf_files)){
@@ -160,7 +157,7 @@ for (i in 1:length(vcf_files)){
   find_kataegis(grl[[1]],sample_name)
   # Make a rainfall plot
   pdf(paste0("./rainfall_plot/",sample_name,"_rainfall.pdf"),width=10, height=2.5)
-  print(plot_rainfall(grl[[1]],title = names(grl),chromosomes = chromosomes,  colors = getPalette(6), cex = 1.5, ylim = 1e+09))
+  print(plot_rainfall(grl[[1]],title = names(grl),chromosomes = chromosomes,  colors = c("dodgerblue","black","red","grey70","olivedrab3","plum2"), cex = 1.5, ylim = 1e+09))
   dev.off()
 }
 
@@ -168,7 +165,6 @@ for (i in 1:length(vcf_files)){
 tmp<-read.table("./rainfall_plot/all.txt",header=T,sep='\t')
 tmp$qvalue_bonferroni = p.adjust(tmp$pvalue,method = "bonferroni")
 tmp$qvalue_fdr = p.adjust(tmp$pvalue,method = "fdr")
-write.table(tmp,"./rainfall_plot/final/all.txt",quote=F,sep='\t',row.names = F)
 
 
 # Final list of kataegis
@@ -180,6 +176,7 @@ for (sample in unique(filtered$sample)){
   sample_file = filtered[which(filtered$sample==sample),]
   write.table(sample_file,paste0("./rainfall_plot/final/",sample,"_kataegis.txt"),quote=F,sep='\t')
 }
+write.table(filtered,"./rainfall_plot/final/kataegis.txt",quote=F,sep='\t',row.names = F)
 
 
 #------------APOBEC positive crypts with kataegis--------------
@@ -202,13 +199,11 @@ sum(filtered$sample %in% APOBEC_postive)/sum(df$kataegis)
 
 df$SBS2_13 <-factor(df$SBS2_13,levels = c('SBS2&13 positive','SBS2&13 negative'))
 
-# Extended figure 8c
-pdf("./fig/Extended_Fig8_Kataegis/kataegis_in_APOBECpositive_crypts.pdf",height=3,width=3)
+# visualisation
 ggplot(df) +
   geom_bar(aes(x = SBS2_13, y = kataegis,fill = c('kataegis','kataegis')),
            stat = "identity") +scale_fill_brewer(palette="Paired")+theme_bw()+theme(panel.grid=element_blank(),legend.position="none",legend.title=element_blank(),panel.border=element_blank(),axis.line=element_line(size=1,colour="black"))+
   labs(x = NULL, y = "Number of Mutations")
-dev.off()
 
 sum(data$sbs_count[data$sample %in% APOBEC_postive])
 
@@ -222,13 +217,12 @@ df$kataegis = c(402,50) #table(filtered$APOBEC_motif)
 402/452
 df$region<-factor(df$region,levels = c('APOBEC motif','Others'))
 
-# Extended figure 8d
-pdf("./fig/Extended_Fig8_Kataegis/kataegis_in_APOBECmotif.pdf",height=3,width=3)
+# visualisation
 ggplot(df) +
   geom_bar(aes(x = region, y = kataegis,fill = c('kataegis','kataegis')),
            stat = "identity") +scale_fill_brewer(palette="Paired")+theme_bw()+theme(panel.grid=element_blank(),legend.position="none",legend.title=element_blank(),panel.border=element_blank(),axis.line=element_line(size=1,colour="black"))+
   labs(x = NULL, y = "Number of Mutations")
-dev.off()
+
 
 sbs<-read.table('./sbs/sbs_on_branch.txt',check.names = F)
 sbs=sbs[!(rownames(sbs) %in% c('PD43851_1','PD43851_4','PD43851_14')),]

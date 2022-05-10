@@ -2,14 +2,14 @@
 title: "Mutational burden in normal human small intestine"
 author: "Yichen Wang"
 output: 
-  html_document:
+  html_document: 
     keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
 library(formatR)
 knitr::opts_chunk$set(tidy.opts=list(width.cutoff=70), tidy=TRUE,warning = FALSE, message = FALSE)
-knitr::opts_knit$set(root.dir = '/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD')
+knitr::opts_knit$set(root.dir = '/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD/small_bowel')
 ```
 
 This analysis aims to assess 1) the rate of SBS and ID mutations, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.
@@ -42,7 +42,7 @@ data$SBS17b <- data$sbs_count_adj*exposure_matrix_crypts$SBS17b
 data$SBS40 <- data$sbs_count_adj*exposure_matrix_crypts$SBS40
 data$SBS41 <- data$sbs_count_adj*exposure_matrix_crypts$SBS41
 
-write.table(data,'./data/stat_summary.txt', quote=F, col.names = T, row.names = F)
+write.table(data,'./data/stat_summary.txt', quote=F, col.names = T, row.names = F,sep='\t')
 
 # Exclude Brunner's glands
 data<-data[which(data$ref=='Crypt'),]
@@ -53,9 +53,9 @@ dim(data)
 df_regression = data
 # Only includes samples with >15 coverage
 df_regression<-df_regression[which(df_regression$coverage>15),]
-# Exclude the individual with extensive chemotherapy and keep the one with little of it
+# Exclude the individual with substantial mutations from chemotherapy 
 df_regression<-df_regression[which(df_regression$patient != 'PD43853'),]
-df_regression$condition[which(df_regression$patient == 'PD28690')] = "Normal"
+
 # Exclude the two unusual cases
 df_regression<-df_regression[! df_regression$sample %in% c('PD46565c_lo0009','PD43851j_P52_DDM_E2'),]
 rownames(df_regression)=df_regression$sample
@@ -69,7 +69,7 @@ dim(df_regression)
 mean(data$coverage)
 
 # Load SBS matrix
-sbs<-read.table('./data/sbs/sbs_on_branch.txt',check.names = F)
+sbs<-read.table('./data/sbs/sbs_mapped_to_branches.txt',check.names = F)
 # Exclude Brunner's glands
 sbs=sbs[!(rownames(sbs) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
 # Total SBS mutations
@@ -77,10 +77,10 @@ sum(sbs)
 
 
 # Load Indel matrix
-indel<-read.table('./data/indel/indel_on_branch.txt',check.names = F)
+indel<-read.table('./data/indel/indel_mapped_to_branches.txt',check.names = F)
 # Exclude Brunner's glands
 indel=indel[!(rownames(indel) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
-# Total IDmutations
+# Total ID mutations
 sum(indel)
 ```
 
@@ -100,7 +100,7 @@ lmm.sbs.coeliac.burden <- lme( sbs_count_adj  ~ age:condition + condition,
 anova(lmm.sbs.coeliac.burden,lmm.sbs.age)
 ```
 
-Coeliac history does not affect between-patient or within-patient heterogeneity of single-base substitution burdens.
+Coeliac history does not affect between-patient heterogeneity of single-base substitution burdens.
 ```{r, warning=FALSE}
 # Whether coeliac history affect inter-patient variation of single base substituions
 lmm.sbs.coeliac.var.inter <- lme( sbs_count_adj  ~ age , random = list(patient = pdDiag(form = ~ age+condition-1)),  data = df_regression, method = "ML")
@@ -111,13 +111,13 @@ lmm.sbs.coeliac.var.intra <- lme( sbs_count_adj  ~ age , random = list(patient =
 anova(lmm.sbs.coeliac.var.intra, lmm.sbs.age)
 ```
 
-Alyhough the p-value from ANNOVA test is significant, after careful investigation into the raw data, this variation in between-patient heterogeneity and heteroscedasticity for coeliac/normal patients was largely introduced by one single patient, PD46565. After removing this patient, distinguishing the two groups does not provide a better fit.
+Although the p-value from ANNOVA test for heteroscedasticity between coeliac/normal groups is significant, after careful investigation into the raw data, this variation was largely introduced by one single patient, PD46565. After removing this patient, distinguishing the two groups does not provide a better fit. Therefore we don't think coeliac history will affect within-patient variation of single-base substitution burdens.
 
 ```{r, warning=FALSE}
 
 lmm.sbs.age <- lme(sbs_count_adj ~ age , random=list(patient = pdDiag(form = ~ age -1)), data = df_regression[which(df_regression$patient != 'PD46565'),], method = 'ML') 
-lmm.sbs.coeliac.var.inter <- lme(sbs_count_adj  ~ age , random = list(patient = pdDiag(form = ~ age-1)), weights = varIdent(form = ~1 | condition ),  data = df_regression[which(df_regression$patient != 'PD46565'),], method = "ML")
-anova(lmm.sbs.coeliac.var.inter, lmm.sbs.age)
+lmm.sbs.coeliac.var.intra <- lme(sbs_count_adj  ~ age , random = list(patient = pdDiag(form = ~ age-1)), weights = varIdent(form = ~1 | condition ),  data = df_regression[which(df_regression$patient != 'PD46565'),], method = "ML")
+anova(lmm.sbs.coeliac.var.intra, lmm.sbs.age)
 
 ```
 
@@ -133,8 +133,10 @@ anova(lmm.sbs.age,lmm.sbs.region.var.inter)
 lmm.sbs.region.var.intra<- lme( sbs_count_adj  ~ age, 
                                 random = list(patient = pdDiag(form = ~ age -1)), weights = varIdent(form = ~1 | region), data = df_regression, method = "ML")
 anova(lmm.sbs.age,lmm.sbs.region.var.intra)
+```
 
-# The effect no longer exist after removing the outlier
+Although the p-value from ANNOVA test for within-patient variation is significant, again, this was largely introduced by one sample. The effect no longer exist after removing this outlier.
+```{r}
 lmm.sbs.age <- lme(sbs_count_adj ~ age , random=list(patient = pdDiag(form = ~ age -1)), data = df_regression[which(df_regression$patient != 'PD46565'),], method = 'ML') 
 lmm.sbs.region.var.intra<- lme( sbs_count_adj  ~ age, 
                                 random = list(patient = pdDiag(form = ~ age -1)), weights = varIdent(form = ~1 | region), data = df_regression[which(df_regression$patient != 'PD46565'),], method = "ML")
@@ -144,7 +146,7 @@ anova(lmm.sbs.age,lmm.sbs.region.var.intra)
 
 ```
 
-Allowing different mutaton rate for duodenum/jejunum/ileum improves the fitness of the model.
+Allowing different mutation rate for duodenum/jejunum/ileum improves the fitness of the model.
 ```{r warning=FALSE}
 
 lmm.sbs.region.slope<- lme( sbs_count_adj  ~ age:region, random = list(patient = pdDiag(form = ~ age-1)), weights = varIdent(form = ~1 ), data = df_regression, method = "ML")
@@ -273,6 +275,7 @@ Therefore, our final model for ID burden includes both age and biopsy region as 
 ```{r Indel_plot, fig.width = 6, fig.height=3, warning=FALSE}
 
 lmm <-lmm.id.region.slope.coeliac.var.intra
+summary(lmm)
 fixed.m1 <- data.frame(fixef(lmm))
 intervals(lmm, which = "fixed")
 
@@ -327,7 +330,7 @@ names(all_cols)=rownames(final_sigs)
 
 ggplot(test, aes(x = patient, y = E2, fill = E1)) + geom_bar(stat = "identity") +scale_fill_manual(values=all_cols)+
   theme_bw()+theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(), panel.grid=element_blank(),panel.border=element_blank())+
-  labs(x = "Samples", y = "Proportion", fill = "Sigantures")+facet_grid(cols = vars(group),scales = "free_x", space = "free")
+  labs(x = "Samples", y = "Proportion", fill = "Signatures")+facet_grid(cols = vars(group),scales = "free_x", space = "free")
 
 ```
 
