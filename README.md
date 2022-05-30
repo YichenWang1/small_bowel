@@ -43,12 +43,12 @@ The trees can then be visualised by treeplots.R.
 ## Mutational signature extraction
 We only kept branches with > 50 mutations during the run, and the input data can be found at data/mutational_matrices/.
 
-Workflow and code are in the directory /Signatures.
+The workflow and code are in the directory /Signatures.
 
 ## Mutational burden analysis
 The input file is at data/stat_summary.txt.
 
-Workflow and code are in the directory Mutational_burden/.
+The workflow and code are in the directory Mutational_burden/.
 
 ## Local hypermutation (kataegis) analysis
-The code are in the directory Kataegis/ and the input vcf files are at data/vcf/.
+The code is in the directory Kataegis/ and the input vcf files are at data/vcf/.
