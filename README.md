@@ -25,7 +25,7 @@ data/cancer/ contained the paired cancer data for comparison (mutational burden 
 ## Variant calling
 The final mutation files can be found in extended data tables and data/somatic_mutations/. 
 
-Alternatively, they can be generated from the raw file via the Sanger pipeline (https://github.com/cancerit) using CaveMan, Pindel, ASCAT, BRASS. When a matched normal sample is available, run all algorithms using that sample as matched normal. Otherwise, run unmatched with a synthetic bam PDv37is.
+Alternatively, they can be generated from the raw files via the Sanger pipeline (https://github.com/cancerit) using CaveMan, Pindel, ASCAT, BRASS. When a matched normal sample is available, run all algorithms using that sample as matched normal. Otherwise, run unmatched with a synthetic bam PDv37is. Please contatc CASM IT directly if you have any questions about installation or running this pipeline.
 
 ## Filtering
 The filters applied to SNVs and Indels to exclude LCM artefacts can be found at: https://github.com/MathijsSanders/SangerLCMFiltering, and the beta-binomial filter to exclude germline mutations are here: https://github.com/TimCoorens/Unmatched_NormSeq.
