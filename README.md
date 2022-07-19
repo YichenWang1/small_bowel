@@ -40,7 +40,7 @@ Phylogenetics/filtering.R contains the beta-binomial filter for the previous ste
 
 ```mpboot -s $patient/${opt}_for_MPBoot.fa -bb 1000```
 
-Reconstructed phylogenetic trees (with number of mutations on each branch) can be found at data/phylogenetic_trees. The trees can then be visualised by treeplots.R.
+Reconstructed phylogenetic trees (with number of mutations on each branch) can be found at data/phylogenetic_trees/. The trees can then be visualised by treeplots.R.
 
 ## Mutational signature extraction
 We only kept branches with > 50 mutations during the run, and the input data can be found at data/mutational_matrices/.
