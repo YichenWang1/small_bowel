@@ -9,7 +9,7 @@ output:
 ```{r setup, include=FALSE}
 library(formatR)
 knitr::opts_chunk$set(tidy.opts=list(width.cutoff=70), tidy=TRUE,warning = FALSE, message = FALSE)
-knitr::opts_knit$set(root.dir = '/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD/small_bowel')
+knitr::opts_knit$set(root.dir = '/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD/code/small_bowel/')
 ```
 
 This analysis aims to assess 1) the rate of SBS and ID mutations, 2) the presence and the rate of mutaional burden of mutational sigantures in normal small intestine.
@@ -26,8 +26,8 @@ library(nlme)
 library(tidyverse)
 
 # Load data
-data=read.table('./data/stat_summary.txt',header=T,stringsAsFactors = F)
-exposure_matrix_crypts = read.table("./data/sigs/exposure_matrix_crypts.txt",header=T,stringsAsFactors = F)
+data=read.csv('./data/Extended_Data_Table3_crypt_summary.csv',header=T,stringsAsFactors = F)
+exposure_matrix_crypts = read.table("./data/signatures/exposure_matrix_crypts.txt",header=T,stringsAsFactors = F)
   
 
 exposure_matrix_crypts = exposure_matrix_crypts[data$sample,]
@@ -41,8 +41,6 @@ data$SBS35 <- data$sbs_count_adj*exposure_matrix_crypts$SBS35
 data$SBS17b <- data$sbs_count_adj*exposure_matrix_crypts$SBS17b
 data$SBS40 <- data$sbs_count_adj*exposure_matrix_crypts$SBS40
 data$SBS41 <- data$sbs_count_adj*exposure_matrix_crypts$SBS41
-
-write.table(data,'./data/stat_summary.txt', quote=F, col.names = T, row.names = F,sep='\t')
 
 # Exclude Brunner's glands
 data<-data[which(data$ref=='Crypt'),]
@@ -69,7 +67,7 @@ dim(df_regression)
 mean(data$coverage)
 
 # Load SBS matrix
-sbs<-read.table('./data/sbs/sbs_mapped_to_branches.txt',check.names = F)
+sbs<-read.table('./data/mutation_matrices/sbs_mapped_to_branches.txt',check.names = F)
 # Exclude Brunner's glands
 sbs=sbs[!(rownames(sbs) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
 # Total SBS mutations
@@ -77,7 +75,7 @@ sum(sbs)
 
 
 # Load Indel matrix
-indel<-read.table('./data/indel/indel_mapped_to_branches.txt',check.names = F)
+indel<-read.table('./data/mutation_matrices/indel_mapped_to_branches.txt',check.names = F)
 # Exclude Brunner's glands
 indel=indel[!(rownames(indel) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
 # Total ID mutations
@@ -320,7 +318,7 @@ test$group[test$patient %in% data$sample[data$condition == 'Coeliac']] = 'Coelia
 
 sig_order=1:10
 names(sig_order)=c("SBS1","SBS5","SBS18","SBS2","SBS13","SBS88","SBS35","SBS40",'SBS41',"SBS17b")
-final_sigs=t(read.table("./data/sigs/final_sigs.txt",check.names=FALSE))
+final_sigs=t(read.table("./data/signatures/final_sigs.txt",check.names=FALSE))
 
 getPalette = colorRampPalette(brewer.pal(8, "Set3"))
 all_cols=getPalette(8)
@@ -336,8 +334,8 @@ ggplot(test, aes(x = patient, y = E2, fill = E1)) + geom_bar(stat = "identity") 
 
 ## 4. The presence of APOBEC signatures SBS2/13 in the small intestine
 ```{r small_bowel_vs_colon, fig.width = 2.5, fig.height = 3}
-exposure_matrix_all = read.table("./data/sigs/exposure_matrix_with_colon.txt",header=T,stringsAsFactors = F)
-input_for_hdp<-read.table('./data/input_for_hdp.txt',check.names = F)
+exposure_matrix_all = read.table("../../small_bowel/data/sigs/exposure_matrix_with_colon.txt",header=T,stringsAsFactors = F)
+input_for_hdp<-read.table('../../small_bowel/data/input_for_hdp.txt',check.names = F)
 input_for_hdp=input_for_hdp[apply(input_for_hdp,1,sum)>50,]
 input_for_hdp=input_for_hdp[!(rownames(input_for_hdp) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
 
@@ -485,7 +483,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS18))+geom_point(aes(c
     legend.text=element_text(size=16))
 ```
 
-### SBS2
+### SBS2/13
 
 The accumulation of SBS2 burden has a non-linear relationship with age.
 ```{r SBS2, warning=FALSE, fig.width = 6, fig.height=3}
@@ -515,9 +513,6 @@ ggplot(data = df_regression, mapping = aes(x = age, y =  SBS2))+geom_point(aes(c
     legend.text=element_text(size=16))
 ```
 
-
-### SBS13
-
 The accumulation of SBS13 burden has a non-linear relationship with age.
 ```{r SBS13, warning=FALSE, fig.width = 6, fig.height=3}
 lmm <- lme( SBS13  ~ age, random = list(patient = pdDiag(form = ~ age-1)), weights = varIdent(form = ~1 ), data = df_regression, method = "ML")
@@ -546,3 +541,8 @@ ggplot(data = df_regression, mapping = aes(x = age, y =  SBS13))+geom_point(aes(
     legend.text=element_text(size=16))
 ```
 
+APOBEC burden is not correlated with reversetranposition events.
+```{r}
+lmm.APOBEC<- lme((SBS2+SBS13) ~ age + retrotransposition +region +condition +gender, random=list(patient = pdDiag(form = ~ age-1)), data = df_regression, method = 'ML') 
+summary(lmm.APOBEC)
+```

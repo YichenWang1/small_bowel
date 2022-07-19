@@ -23,8 +23,9 @@ library(nlme)
 library(tidyverse)
 
 # Load data
-data = read.table("./data/stat_summary.txt", header = T, stringsAsFactors = F)
-exposure_matrix_crypts = read.table("./data/sigs/exposure_matrix_crypts.txt",
+data = read.csv("./data/Extended_Data_Table3_crypt_summary.csv", header = T,
+    stringsAsFactors = F)
+exposure_matrix_crypts = read.table("./data/signatures/exposure_matrix_crypts.txt",
     header = T, stringsAsFactors = F)
 
 
@@ -39,9 +40,6 @@ data$SBS35 <- data$sbs_count_adj * exposure_matrix_crypts$SBS35
 data$SBS17b <- data$sbs_count_adj * exposure_matrix_crypts$SBS17b
 data$SBS40 <- data$sbs_count_adj * exposure_matrix_crypts$SBS40
 data$SBS41 <- data$sbs_count_adj * exposure_matrix_crypts$SBS41
-
-write.table(data, "./data/stat_summary.txt", quote = F, col.names = T,
-    row.names = F, sep = "\t")
 
 # Exclude Brunner's glands
 data <- data[which(data$ref == "Crypt"), ]
@@ -65,7 +63,7 @@ dim(data)
 ```
 
 ```
-## [1] 342  26
+## [1] 342  31
 ```
 
 ```r
@@ -84,7 +82,7 @@ dim(df_regression)
 ```
 
 ```
-## [1] 306  26
+## [1] 306  31
 ```
 
 
@@ -100,7 +98,8 @@ mean(data$coverage)
 
 ```r
 # Load SBS matrix
-sbs <- read.table("./data/sbs/sbs_on_branch.txt", check.names = F)
+sbs <- read.table("./data/mutation_matrices/sbs_mapped_to_branches.txt",
+    check.names = F)
 # Exclude Brunner's glands
 sbs = sbs[!(rownames(sbs) %in% c("PD43851_1", "PD43851_4", "PD43851_14")),
     ]
@@ -114,7 +113,8 @@ sum(sbs)
 
 ```r
 # Load Indel matrix
-indel <- read.table("./data/indel/indel_on_branch.txt", check.names = F)
+indel <- read.table("./data/mutation_matrices/indel_mapped_to_branches.txt",
+    check.names = F)
 # Exclude Brunner's glands
 indel = indel[!(rownames(indel) %in% c("PD43851_1", "PD43851_4", "PD43851_14")),
     ]
@@ -230,7 +230,7 @@ anova(lmm.sbs.age, lmm.sbs.region.var.inter)
 ```
 ##                          Model df      AIC      BIC    logLik   Test  L.Ratio
 ## lmm.sbs.age                  1  4 4755.672 4770.567 -2373.836                
-## lmm.sbs.region.var.inter     2  7 4755.090 4781.155 -2370.545 1 vs 2 6.581843
+## lmm.sbs.region.var.inter     2  7 4755.090 4781.155 -2370.545 1 vs 2 6.581847
 ##                          p-value
 ## lmm.sbs.age                     
 ## lmm.sbs.region.var.inter  0.0865
@@ -650,7 +650,7 @@ summary(lmm)
 ## 
 ## Standardized Within-Group Residuals:
 ##          Min           Q1          Med           Q3          Max 
-## -5.226981085 -0.338490543  0.006609252  0.396818158  4.679694637 
+## -5.226981086 -0.338490543  0.006609252  0.396818157  4.679694637 
 ## 
 ## Number of Observations: 306
 ## Number of Groups: 38
@@ -726,7 +726,7 @@ test$group[test$patient %in% data$sample[data$condition == "Coeliac"]] = "Coelia
 sig_order = 1:10
 names(sig_order) = c("SBS1", "SBS5", "SBS18", "SBS2", "SBS13", "SBS88",
     "SBS35", "SBS40", "SBS41", "SBS17b")
-final_sigs = t(read.table("./data/sigs/final_sigs.txt", check.names = FALSE))
+final_sigs = t(read.table("./data/signatures/final_sigs.txt", check.names = FALSE))
 
 getPalette = colorRampPalette(brewer.pal(8, "Set3"))
 all_cols = getPalette(8)
@@ -746,9 +746,10 @@ ggplot(test, aes(x = patient, y = E2, fill = E1)) + geom_bar(stat = "identity") 
 ## 4. The presence of APOBEC signatures SBS2/13 in the small intestine
 
 ```r
-exposure_matrix_all = read.table("./data/sigs/exposure_matrix_with_colon.txt",
+exposure_matrix_all = read.table("../../small_bowel/data/sigs/exposure_matrix_with_colon.txt",
     header = T, stringsAsFactors = F)
-input_for_hdp <- read.table("./data/input_for_hdp.txt", check.names = F)
+input_for_hdp <- read.table("../../small_bowel/data/input_for_hdp.txt",
+    check.names = F)
 input_for_hdp = input_for_hdp[apply(input_for_hdp, 1, sum) > 50, ]
 input_for_hdp = input_for_hdp[!(rownames(input_for_hdp) %in% c("PD43851_1",
     "PD43851_4", "PD43851_14")), ]
@@ -1052,7 +1053,7 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS18)) + geom_point(aes
 
 ![](Mutational_burden_files/figure-html/SBS18-1.png)<!-- -->
 
-### SBS2
+### SBS2/13
 
 The accumulation of SBS2 burden has a non-linear relationship with age.
 
@@ -1095,7 +1096,7 @@ intervals(lmm, which = "fixed")
 ## 
 ##  Fixed effects:
 ##                    lower      est.      upper
-## (Intercept) -11.75056059 6.6878474 25.1262555
+## (Intercept) -11.75056058 6.6878474 25.1262555
 ## age          -0.07260233 0.3630066  0.7986154
 ## attr(,"label")
 ## [1] "Fixed effects:"
@@ -1124,9 +1125,6 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS2)) + geom_point(aes(
 ```
 
 ![](Mutational_burden_files/figure-html/SBS2-1.png)<!-- -->
-
-
-### SBS13
 
 The accumulation of SBS13 burden has a non-linear relationship with age.
 
@@ -1199,3 +1197,48 @@ ggplot(data = df_regression, mapping = aes(x = age, y = SBS13)) + geom_point(aes
 
 ![](Mutational_burden_files/figure-html/SBS13-1.png)<!-- -->
 
+APOBEC burden is not correlated with reversetranposition events.
+
+```r
+lmm.APOBEC <- lme((SBS2 + SBS13) ~ age + retrotransposition + region +
+    condition + gender, random = list(patient = pdDiag(form = ~age - 1)),
+    data = df_regression, method = "ML")
+summary(lmm.APOBEC)
+```
+
+```
+## Linear mixed-effects model fit by maximum likelihood
+##  Data: df_regression 
+##        AIC      BIC    logLik
+##   3879.302 3912.814 -1930.651
+## 
+## Random effects:
+##  Formula: ~age - 1 | patient
+##              age Residual
+## StdDev: 1.039797 125.9701
+## 
+## Fixed effects: (SBS2 + SBS13) ~ age + retrotransposition + region + condition +      gender 
+##                        Value Std.Error  DF    t-value p-value
+## (Intercept)        -41.39375  38.24021 265 -1.0824667  0.2800
+## age                  0.83526   0.44977  34  1.8570823  0.0720
+## retrotransposition   2.10461   8.85394 265  0.2377026  0.8123
+## regionIleum          6.06609  24.92289 265  0.2433944  0.8079
+## regionJejunum       81.36269  35.20875 265  2.3108660  0.0216
+## conditionNormal     37.55003  35.05245  34  1.0712525  0.2916
+## genderMale          12.22143  23.95726  34  0.5101348  0.6133
+##  Correlation: 
+##                    (Intr) age    rtrtrn rgnIlm rgnJjn cndtnN
+## age                -0.535                                   
+## retrotransposition -0.105 -0.029                            
+## regionIleum        -0.149  0.169 -0.016                     
+## regionJejunum      -0.046  0.022 -0.016  0.390              
+## conditionNormal    -0.741  0.130  0.074 -0.337 -0.245       
+## genderMale         -0.193 -0.240  0.017  0.135  0.101  0.023
+## 
+## Standardized Within-Group Residuals:
+##          Min           Q1          Med           Q3          Max 
+## -2.938499751 -0.356307486 -0.149269081 -0.007221931  5.578412104 
+## 
+## Number of Observations: 306
+## Number of Groups: 38
+```

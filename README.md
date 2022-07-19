@@ -1,6 +1,6 @@
 # APOBEC mutagenesis is a common process in normal human small intestine. Wang et al.
 
-Scripts used to reproduce the analyses of the manuscript are available at: https://github.com/YichenWang1/small_bowel. Please contact Yichen (yw2@sanger.ac.uk) if you have any questions or enquires.
+Scripts used to reproduce the analyses of the manuscript are available at: https://github.com/YichenWang1/small_bowel. Please contact Yichen (yw2@sanger.ac.uk) if you have any questions and enquires.
 
 ## Dataset
 
@@ -12,7 +12,7 @@ data/somatic_mutations/snp/ contains the final SNPs placed on phylogenetic branc
 
 data/somatic_mutations/indel/ contains the final INDELs placed on phylogenetic branches.
 
-data/mutational_matrices/ contains the final SBS and ID matrices for the cohort.
+data/mutation_matrices/ contains the final SBS and ID matrices for the cohort.
 
 data/signatures/ contains the original HDP sigantures, their decomposition to PCAWAG reference signatures, and the final reference signature exposures for each samples and each phylogenetic branch.
 
@@ -20,12 +20,14 @@ data/phylogenetic_trees/ contains the structure of the reconstructed phylogeneis
 
 data/vcf/ contains the final SNP vcf files for finding and plotting kataegis.
 
-data/cancer/ contained the paired cancer data for comparison (mutational burden and mutational siganture exposures).
+data/cancer/ contains the paired cancer data for comparison (mutational burden and mutational siganture exposures).
+
+data/motif/ contains enrichment scores for TCN motifs
 
 ## Variant calling
 The final mutation files can be found in extended data tables and data/somatic_mutations/. 
 
-Alternatively, they can be generated from the raw files via the Sanger pipeline (https://github.com/cancerit) using CaveMan, Pindel, ASCAT, BRASS. When a matched normal sample is available, run all algorithms using that sample as matched normal. Otherwise, run unmatched with a synthetic bam PDv37is. Please contatc CASM IT directly if you have any questions about installation or running this pipeline.
+Alternatively, they can be generated from the raw file via the Sanger pipeline (https://github.com/cancerit) using CaveMan, Pindel, ASCAT, BRASS. When a matched normal sample is available, run all algorithms using that sample as matched normal. Otherwise, run unmatched with a synthetic bam PDv37is.
 
 ## Filtering
 The filters applied to SNVs and Indels to exclude LCM artefacts can be found at: https://github.com/MathijsSanders/SangerLCMFiltering, and the beta-binomial filter to exclude germline mutations are here: https://github.com/TimCoorens/Unmatched_NormSeq.
@@ -38,17 +40,17 @@ Phylogenetics/filtering.R contains the beta-binomial filter for the previous ste
 
 ```mpboot -s $patient/${opt}_for_MPBoot.fa -bb 1000```
 
-The trees can then be visualised by treeplots.R.
+Reconstructed phylogenetic trees (with number of mutations on each branch) can be found at data/phylogenetic_trees. The trees can then be visualised by treeplots.R.
 
 ## Mutational signature extraction
 We only kept branches with > 50 mutations during the run, and the input data can be found at data/mutational_matrices/.
 
-The workflow and code are in the directory /Signatures.
+Workflow and code are in the directory /Signatures.
 
 ## Mutational burden analysis
-The input file is at data/stat_summary.txt.
+The input file is at data/Extended\_Data\_Table3\_crypt\_summary.csv
 
-The workflow and code are in the directory Mutational_burden/.
+Workflow and code are in the directory Mutational_burden/.
 
 ## Local hypermutation (kataegis) analysis
-The code is in the directory Kataegis/ and the input vcf files are at data/vcf/.
+The code are in the directory Kataegis/ and the input vcf files are at data/vcf/.
