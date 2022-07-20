@@ -54,3 +54,6 @@ Workflow and code are in the directory Mutational_burden/.
 
 ## Local hypermutation (kataegis) analysis
 The code is in the directory Kataegis/ and the input vcf files are at data/vcf/.
+
+## Motif enrichment
+The code is in the directory APOBEC_motif/, the input vcf files are at data/vcf/ and the output is at data/motif/.
