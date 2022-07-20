@@ -53,4 +53,4 @@ The input file is at data/Extended\_Data\_Table3\_crypt\_summary.csv
 Workflow and code are in the directory Mutational_burden/.
 
 ## Local hypermutation (kataegis) analysis
-The code are in the directory Kataegis/ and the input vcf files are at data/vcf/.
+The code and output are in the directory Kataegis/ and the input vcf files are at data/vcf/.
