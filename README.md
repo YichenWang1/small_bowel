@@ -55,7 +55,7 @@ Workflow and code are in the directory Mutational_burden/.
 ## Local hypermutation (kataegis) analysis
 The code is in the directory Kataegis/ and the input vcf files are at data/vcf/.
 
-## single cell RNA-seq of small and large intestine
+## Single cell RNA-seq of small and large intestine
 The code is in the directory Expression/, instructions about how to download the input dataset are included in the script.
 
 ## Motif enrichment
