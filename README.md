@@ -55,5 +55,8 @@ Workflow and code are in the directory Mutational_burden/.
 ## Local hypermutation (kataegis) analysis
 The code is in the directory Kataegis/ and the input vcf files are at data/vcf/.
 
+## RNA-seq
+The code is in the directory Expression/, instructions about how to download the input dataset are included in the script.
+
 ## Motif enrichment
 The code is in the directory APOBEC_motif/, the input vcf files are at data/vcf/ and the output is at data/motif/.
