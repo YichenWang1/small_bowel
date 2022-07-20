@@ -11,7 +11,7 @@ library("Rsamtools")
 library("MASS")
 library('vcfR')
 library('ggplot2')
-setwd('/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD/small_bowel/data')
+setwd('/Users/yw2/OneDrive\ -\ University\ of\ Cambridge/PhD/small_bowel/')
 options(stringsAsFactors = F)
 
 
@@ -64,7 +64,7 @@ plot_rainfall <- function (vcf, chromosomes, title = "", colors, cex = 2.5, cex_
 
 
 # function to identify kataegis by a negative binomial test
-find_kataegis <- function (vcf,sample_name,outpath="./rainfall_plot/") 
+find_kataegis <- function (vcf,sample_name,outpath="./data/rainfall_plot/") 
 {
   chromosomes <- seqnames(get(ref_genome))[1:23]
   chr_length = seqlengths(vcf)
@@ -162,7 +162,7 @@ for (i in 1:length(vcf_files)){
 }
 
 # Concatenate all individual *kataegis.txt into a single all.txt for multiple test correction
-tmp<-read.table("./rainfall_plot/all.txt",header=T,sep='\t')
+tmp<-read.table(".data/rainfall_plot/all.txt",header=T,sep='\t')
 tmp$qvalue_bonferroni = p.adjust(tmp$pvalue,method = "bonferroni")
 tmp$qvalue_fdr = p.adjust(tmp$pvalue,method = "fdr")
 
@@ -174,28 +174,31 @@ table(filtered$APOBEC_motif) #FALSE=50   TRUE=402
 
 for (sample in unique(filtered$sample)){
   sample_file = filtered[which(filtered$sample==sample),]
-  write.table(sample_file,paste0("./rainfall_plot/final/",sample,"_kataegis.txt"),quote=F,sep='\t')
+  write.table(sample_file,paste0("./data/rainfall_plot/final/",sample,"_kataegis.csv"),quote=F)
 }
-write.table(filtered,"./rainfall_plot/final/kataegis.txt",quote=F,sep='\t',row.names = F)
+write.table(filtered,"./data/rainfall_plot/final/kataegis.csv",quote=F,row.names = F)
 
 
 #------------APOBEC positive crypts with kataegis--------------
+filtered = read.csv('./manuscript/supplementary/Extended_Data_Table5_kataegis.csv')
 exposure_matrix_crypts = read.table("./data/sigs/exposure_matrix_crypts.txt",header=T,stringsAsFactors = F)
 APOBEC_postive <- rownames(exposure_matrix_crypts)[exposure_matrix_crypts$SBS2+exposure_matrix_crypts$SBS13>0.05]
-sum(APOBEC_postive %in% filtered$sample)
-sum(APOBEC_postive %in% filtered$sample)/length(APOBEC_postive)
+sum(APOBEC_postive %in% unlist(strsplit(filtered$sample,split='; ')))
+sum(APOBEC_postive %in% unlist(strsplit(filtered$sample,split='; ')))/length(APOBEC_postive)
 chisq.test(rbind(c(sum(APOBEC_postive %in% filtered$sample),length(unique(APOBEC_postive))-sum(APOBEC_postive %in% filtered$sample)), c(sum(!unique(filtered$sample) %in% APOBEC_postive),length(data$sample)-length(APOBEC_postive)-20)))
 
-
-sum(filtered$sample %in% APOBEC_postive)
-sum(!filtered$sample %in% APOBEC_postive)
+sum(sapply(1:length(filtered$type),function(idx){
+  if(sum(unlist(strsplit(filtered$sample[idx],split='; ')) %in% APOBEC_postive)>0){
+    1} else 0})) #321
+sum(sapply(1:length(filtered$type),function(idx){
+  if(sum(unlist(strsplit(filtered$sample[idx],split='; ')) %in% APOBEC_postive)>0){
+    0} else 1})) #91
+321/412
 
 df=data.frame(matrix(ncol = 2, nrow = 2))
 colnames(df) <- c('SBS2&13', 'kataegis')
 df$SBS2_13 = c('SBS2&13 positive','SBS2&13 negative')
-df$kataegis = c(sum(filtered$sample %in% APOBEC_postive),sum(!filtered$sample %in% APOBEC_postive))
-
-sum(filtered$sample %in% APOBEC_postive)/sum(df$kataegis)
+df$kataegis = c(321,91)
 
 df$SBS2_13 <-factor(df$SBS2_13,levels = c('SBS2&13 positive','SBS2&13 negative'))
 
@@ -207,14 +210,14 @@ ggplot(df) +
 
 sum(data$sbs_count[data$sample %in% APOBEC_postive])
 
-chisq.test(rbind(c(sum(filtered$sample %in% APOBEC_postive),sum(!filtered$sample %in% APOBEC_postive)), c(sum(data$sbs_count[data$sample %in% APOBEC_postive])-355,sum(data$sbs_count[!data$sample %in% APOBEC_postive])-97)))
+chisq.test(rbind(c(321,91), c(sum(data$sbs_count[data$sample %in% APOBEC_postive])-321,sum(data$sbs_count[!data$sample %in% APOBEC_postive])-91)))
 
 #------------kataegis in APOBEC motif--------------
 df=data.frame(matrix(ncol = 2, nrow = 2))
 colnames(df) <- c('region', 'kataegis')
 df$region = c('APOBEC motif','Others')
-df$kataegis = c(402,50) #table(filtered$APOBEC_motif)
-402/452
+df$kataegis = c(363,49) #table(filtered$APOBEC_motif)
+363/412
 df$region<-factor(df$region,levels = c('APOBEC motif','Others'))
 
 # visualisation
@@ -224,10 +227,10 @@ ggplot(df) +
   labs(x = NULL, y = "Number of Mutations")
 
 
-sbs<-read.table('./sbs/sbs_on_branch.txt',check.names = F)
+sbs<-read.table('../code/small_bowel/data/mutation_matrices/sbs_mapped_to_branches.txt',check.names = F)
 sbs=sbs[!(rownames(sbs) %in% c('PD43851_1','PD43851_4','PD43851_14')),]
 
-sum(sbs[,grep('C>[ATG],T-',colnames(sbs))])-402
-sum(sbs[,-grep('C>[ATG],T-',colnames(sbs))])-50
-chisq.test(rbind(c(402, 50), c(sum(input_for_hdp[,grep('C>[ATG],T-',colnames(input_for_hdp))])-402, sum(input_for_hdp[,-grep('C>[ATG],T-',colnames(input_for_hdp))])-50)))
+sum(sbs[,grep('C>[ATG],T-',colnames(sbs))])-363
+sum(sbs[,-grep('C>[ATG],T-',colnames(sbs))])-49
+chisq.test(rbind(c(363, 49), c(sum(sbs[,grep('C>[ATG],T-',colnames(sbs))])-396, sum(sbs[,-grep('C>[ATG],T-',colnames(sbs))])-50)))
 
