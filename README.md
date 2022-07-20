@@ -34,9 +34,9 @@ The filters applied to SNVs and Indels to exclude LCM artefacts can be found at:
 
 ## Phylogenetic tree reconstruction
 
-Phylogentic trees were constructed using MPBoot, with supplementary code in Phylogenetics/.
+Phylogentic trees were constructed using MPBoot, with supplementary code in Phylogeny/.
 
-Phylogenetics/filtering.R contains the beta-binomial filter for the previous step and will generate the input *for_MPBoot.fa file for MPBoot. Then run:
+Phylogeny/filtering.R contains the beta-binomial filter for the previous step and will generate the input *for_MPBoot.fa file for MPBoot. Then run:
 
 ```mpboot -s $patient/${opt}_for_MPBoot.fa -bb 1000```
 
