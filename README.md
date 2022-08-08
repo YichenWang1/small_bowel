@@ -40,7 +40,9 @@ Phylogeny/filtering.R contains the beta-binomial filter for the previous step an
 
 ```mpboot -s $patient/${opt}_for_MPBoot.fa -bb 1000```
 
-Reconstructed phylogenetic trees (with number of mutations on each branch) can be found at data/phylogenetic_trees/. The trees can then be visualised by treeplots.R.
+Reconstructed phylogenetic trees in .tree and .csv format (with number of mutations on each branch) can be found at data/phylogenetic_trees/. The trees can then be visualised by treeplots.R.
+
+This part of analysis generated the tree plots dislayed in Fig.2, Fig.3 and Extended Data Fig.3.
 
 ## Mutational signature extraction
 We only kept branches with > 50 mutations during the run, and the input data can be found at data/mutational_matrices/.
@@ -52,11 +54,20 @@ The input file is at data/Extended\_Data\_Table3\_crypt\_summary.csv
 
 Workflow and code are in the directory Mutational_burden/.
 
+This part of analysis generated the plots dislayed in Fig.1 and Extended Data Fig.4.
+
 ## Local hypermutation (kataegis) analysis
 The code is in the directory Kataegis/ and the input vcf files are at data/vcf/.
+
+This part of analysis generated the plots dislayed in Fig.4.
+
 
 ## Single cell RNA-seq of small and large intestine
 The code is in the directory Expression/, instructions about how to download the input dataset are included in the script.
 
-## Motif enrichment
-The code is in the directory APOBEC_motif/, the input vcf files are at data/vcf/ and the output is at data/motif/.
+This analysis generated statistics in Table 1.
+
+## Other_supplementary
+
+VAF.R : To generate VAF distribution plots of all samples (Extended Data Fig.1).
+APOBEC_motif_enrichment.R: We ran P-MACD to extract context freqeuncy and  this is the post-processing code for P-MACD results (Extended Data Fig.7c). 
