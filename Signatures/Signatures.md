@@ -114,7 +114,7 @@ plot_comp_distn(mut_example_multi, cat_names=trinuc_context,
 
 ```r
 # Load reference signatures
-ref=read.csv("./public/pcawg_signatures_v3.1.txt", header=T, stringsAsFactors = F, sep='\t')
+ref=read.csv("../../public/pcawg_signatures_v3.1.txt", header=T, stringsAsFactors = F, sep='\t')
 features<-lapply(1:dim(ref)[1],function(idx){
   paste(unlist(strsplit(as.character(ref[idx,2]),""))[1],"[",as.character(ref[idx,1]),"]",unlist(strsplit(as.character(ref[idx,2]),""))[3],sep = "")
 })
@@ -122,6 +122,8 @@ features<-unlist(features)
 ref<-ref[,-1]
 ref<-ref[,-1]
 rownames(ref)<-features
+
+ref=as.data.frame(ref)
 
 
 ref<-apply(ref,2,as.numeric)
@@ -173,6 +175,7 @@ gdsigs=c("SBS1","SBS2", "SBS5", "SBS13","SBS18","SBS88","SBS35","SBS40", "SBS41"
 
 
 signatures=t(ref[,gdsigs])
+
 profiles=hdp_sigs
 
 sigs_to_decompose=rowSums(cosine_matrix>0.9)

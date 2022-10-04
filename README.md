@@ -48,13 +48,14 @@ This part of analysis generated the tree plots dislayed in Fig.2, Fig.3 and Exte
 We only kept branches with > 50 mutations during the run, and the input data can be found at data/mutational_matrices/.
 
 Workflow and code are in the directory /Signatures.
+This part of analysis generated Extended Data Fig.9.
 
-## Mutational burden analysis
+## Mutation burden analysis
 The input file is at data/Extended\_Data\_Table3\_crypt\_summary.csv
 
-Workflow and code are in the directory Mutational_burden/.
+Workflow and code are in the directory Mutation_burden/.
 
-This part of analysis generated the plots dislayed in Fig.1 and Extended Data Fig.4.
+This part of analysis generated the plots dislayed in Fig.1, Extended Data Fig.4 and Extended Data Fig.8.
 
 ## Local hypermutation (kataegis) analysis
 The code is in the directory Kataegis/ and the input vcf files are at data/vcf/.
@@ -67,8 +68,12 @@ The code is in the directory Expression/, instructions about how to download the
 
 This analysis generated statistics in Table 1.
 
-## Other_supplementary
+## Others
 
-VAF.R : To generate VAF distribution plots of all samples (Extended Data Fig.1).
+Others/stem_cell/ contains code and input files for simulating stem cell dynamics.
 
-APOBEC_motif_enrichment.R: We ran P-MACD to extract context freqeuncy and  this is the post-processing code for P-MACD results (Extended Data Fig.7c). 
+Others/VAF.R : To generate VAF distribution plots of all samples (Extended Data Fig.1).
+
+Others/APOBEC_motif_enrichment.R: We ran P-MACD to extract context freqeuncy and  this is the post-processing code for P-MACD results (Extended Data Fig.7c). 
+
+

@@ -428,7 +428,7 @@ plot_comp_distn(mut_example_multi, cat_names=trinuc_context,
 <div id="deconvolute-hdp-signatures" class="section level3">
 <h3>3. Deconvolute HDP signatures</h3>
 <pre class="r"><code># Load reference signatures
-ref=read.csv(&quot;./public/pcawg_signatures_v3.1.txt&quot;, header=T, stringsAsFactors = F, sep='\t')
+ref=read.csv(&quot;../../public/pcawg_signatures_v3.1.txt&quot;, header=T, stringsAsFactors = F, sep='\t')
 features&lt;-lapply(1:dim(ref)[1],function(idx){
   paste(unlist(strsplit(as.character(ref[idx,2]),&quot;&quot;))[1],&quot;[&quot;,as.character(ref[idx,1]),&quot;]&quot;,unlist(strsplit(as.character(ref[idx,2]),&quot;&quot;))[3],sep = &quot;&quot;)
 })
@@ -436,6 +436,8 @@ features&lt;-unlist(features)
 ref&lt;-ref[,-1]
 ref&lt;-ref[,-1]
 rownames(ref)&lt;-features
+
+ref=as.data.frame(ref)
 
 
 ref&lt;-apply(ref,2,as.numeric)
@@ -482,6 +484,7 @@ gdsigs=c(&quot;SBS1&quot;,&quot;SBS2&quot;, &quot;SBS5&quot;, &quot;SBS13&quot;,
 
 
 signatures=t(ref[,gdsigs])
+
 profiles=hdp_sigs
 
 sigs_to_decompose=rowSums(cosine_matrix&gt;0.9)
