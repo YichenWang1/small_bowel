@@ -26,7 +26,7 @@ library(nlme)
 library(tidyverse)
 
 # Load data
-data=read.csv('./data/Extended_Data_Table3_crypt_summary.csv',header=T,stringsAsFactors = F)
+data=read.csv('./data/Supplementary_Table4_crypt_summary.csv',header=T,stringsAsFactors = F)
 exposure_matrix_crypts = read.table("./data/signatures/exposure_matrix_crypts.txt",header=T,stringsAsFactors = F)
   
 

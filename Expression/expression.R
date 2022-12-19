@@ -16,7 +16,8 @@ SmallInt.subset.all <- subset(x = epi, subset = Region == "SmallInt")
 rm(epi)
 gc()
 
-
+# LargeInt.subset.all <- LoadH5Seurat("/Users/yw2/Documents/FARM/public/scRNAseq/gut/LargeInt_raw_counts02.h5seurat")
+# SmallInt.subset.all <- LoadH5Seurat("/Users/yw2/Documents/FARM/public/scRNAseq/gut/SmallInt_raw_counts02.h5seurat")
 hist(SmallInt.subset.all@meta.data[["nCount_RNA"]], xlim = c(0,80000),xlab = "nCount_RNA",main='Small Intestine Epithelium',breaks=40)
 median(SmallInt.subset.all@meta.data[["nCount_RNA"]])
 hist(SmallInt.subset.all@meta.data[["nFeature_RNA"]],xlab = "nFeature_RNA",main='Small Intestine Epithelium')
@@ -77,14 +78,14 @@ df$nFeature=c(LargeInt.subset.all@meta.data$nFeature_RNA,SmallInt.subset.all@met
 df$nCount=c(LargeInt.subset.all@meta.data$nCount_RNA,SmallInt.subset.all@meta.data$nCount_RNA)
 df$region=as.factor(df$region)
 
-summary(m1 <- glm.nb(APOBEC1 ~ nFeature + nCount + region +APOBEC3B +APOBEC3A, data = df))[["coefficients"]]
+summary(m1 <- glm.nb(APOBEC1 ~ nFeature + nCount + region +APOBEC3A +APOBEC3B, data = df), maxit = 500)[["coefficients"]]
 m2 <- update(m1, . ~ . - region)
 anova(m1, m2)
 
 
 # APOBEC expression in stem cells. Change the gene names as needed.
-APOBEC_LargeInt = LargeInt.subset@assays$RNA@counts[c('APOBEC1','APOBEC3A','APOBEC3B'),]
-APOBEC_SmallInt = SmallInt.subset@assays$RNA@counts[c('APOBEC1','APOBEC3A','APOBEC3B'),]
+APOBEC_LargeInt = LargeInt.subset@assays$RNA[c('APOBEC1','APOBEC3A','APOBEC3B'),]
+APOBEC_SmallInt = SmallInt.subset@assays$RNA[c('APOBEC1','APOBEC3A','APOBEC3B'),]
 
 df = data.frame(APOBEC1 = c(APOBEC_LargeInt['APOBEC1',],APOBEC_SmallInt['APOBEC1',]), APOBEC3A = c(APOBEC_LargeInt['APOBEC3A',],APOBEC_SmallInt['APOBEC3A',]), APOBEC3B = c(APOBEC_LargeInt['APOBEC3B',],APOBEC_SmallInt['APOBEC3B',]))
 df$region=c(rep('LargeInt',dim(LargeInt.subset)[2]),rep('SmallInt',dim(SmallInt.subset)[2]))
@@ -153,19 +154,19 @@ df$nFeature=c(HPA_LargeInt.all@meta.data$nFeature_RNA,HPA_SmallInt.all@meta.data
 df$nCount=c(HPA_LargeInt.all@meta.data$nCount_RNA,HPA_SmallInt.all@meta.data$nCount_RNA)
 df$region=as.factor(df$region)
 
-sum(df$APOBEC1[which(df$region=='SmallInt')])
+sum(df$APOBEC3B[which(df$region=='SmallInt')])
 sum(df$region=='SmallInt')
-sum(df$APOBEC1[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')
+sum(df$APOBEC3B[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')
 
-sum(df$APOBEC1[which(df$region=='LargeInt')])
+sum(df$APOBEC3B[which(df$region=='LargeInt')])
 sum(df$region=='LargeInt')
-sum(df$APOBEC1[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')
+sum(df$APOBEC3B[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')
 
-(sum(df$APOBEC1[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')) / (sum(df$APOBEC1[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')) 
+(sum(df$APOBEC3B[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')) / (sum(df$APOBEC3B[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')) 
 
 
 
-# Whether APOBEC expression level is different in small vs. large intestine epithelial stem cells. Change the gene names as needed
+# Whether APOBEC expression level is different in small vs. large intestine epithelial cells. Change the gene names as needed
 APOBEC_LargeInt = HPA_LargeInt.all@assays$RNA@counts[c('ENSG00000111701','ENSG00000128383','ENSG00000179750'),]
 APOBEC_SmallInt = HPA_SmallInt.all@assays$RNA@counts[c('ENSG00000111701','ENSG00000128383','ENSG00000179750'),]
 rownames(APOBEC_LargeInt) = c('APOBEC1','APOBEC3A','APOBEC3B')
@@ -177,11 +178,11 @@ df$nFeature=c(HPA_LargeInt.all@meta.data$nFeature_RNA,HPA_SmallInt.all@meta.data
 df$nCount=c(HPA_LargeInt.all@meta.data$nCount_RNA,HPA_SmallInt.all@meta.data$nCount_RNA)
 df$region=as.factor(df$region)
 
-summary(m1 <- glm.nb(APOBEC1 ~ nFeature + nCount + region +APOBEC3A +APOBEC3B, data = df))[["coefficients"]]
+summary(m1 <- glm.nb(APOBEC1 ~ nFeature + nCount + region + APOBEC3A + APOBEC3B, data = df))[["coefficients"]]
 m2 <- update(m1, . ~ . - region)
 anova(m1, m2)
 
-# APOBEC expression in undifferentiated cells in epitehlium. Change the gene names as needed.
+# APOBEC expression in undifferentiated cells in epithelial undifferentiated cells. Change the gene names as needed.
 APOBEC_LargeInt = HPA_LargeInt.subset@assays$RNA[c('ENSG00000111701','ENSG00000128383','ENSG00000179750'),]
 APOBEC_SmallInt = HPA_SmallInt.subset@assays$RNA[c('ENSG00000111701','ENSG00000128383','ENSG00000179750'),]
 rownames(APOBEC_LargeInt) = c('APOBEC1','APOBEC3A','APOBEC3B')
@@ -203,7 +204,6 @@ sum(df$APOBEC1[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')
 
 (sum(df$APOBEC1[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')) / (sum(df$APOBEC1[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')) 
 
-
 # Whether APOBEC expression level is different in small vs. large intestine epithelial undifferentiated cells. Change the gene names as needed
 APOBEC_LargeInt = HPA_LargeInt.subset@assays$RNA@counts[c('ENSG00000111701','ENSG00000128383','ENSG00000179750'),]
 APOBEC_SmallInt = HPA_SmallInt.subset@assays$RNA@counts[c('ENSG00000111701','ENSG00000128383','ENSG00000179750'),]
@@ -211,9 +211,9 @@ rownames(APOBEC_LargeInt) = c('APOBEC1','APOBEC3A','APOBEC3B')
 rownames(APOBEC_SmallInt) = c('APOBEC1','APOBEC3A','APOBEC3B')
 
 df = data.frame(APOBEC1 = c(APOBEC_LargeInt['APOBEC1',],APOBEC_SmallInt['APOBEC1',]), APOBEC3A = c(APOBEC_LargeInt['APOBEC3A',],APOBEC_SmallInt['APOBEC3A',]), APOBEC3B = c(APOBEC_LargeInt['APOBEC3B',],APOBEC_SmallInt['APOBEC3B',]))
-df$region=c(rep('LargeInt',dim(HPA_LargeInt.subset)[2]),rep('SmallInt',dim(HPA_SmallInt.all)[2]))
+df$region=c(rep('LargeInt',dim(HPA_LargeInt.subset)[2]),rep('SmallInt',dim(HPA_SmallInt.subset)[2]))
 df$nFeature=c(HPA_LargeInt.subset@meta.data$nFeature_RNA,HPA_SmallInt.subset@meta.data$nFeature_RNA)
-df$nCount=c(HPA_LargeInt.subset@meta.data$nCount_RNA,HPA_SmallInt.all@meta.data$nCount_RNA)
+df$nCount=c(HPA_LargeInt.subset@meta.data$nCount_RNA,HPA_SmallInt.subset@meta.data$nCount_RNA)
 df$region=as.factor(df$region)
 
 summary(m1 <- glm.nb(APOBEC1 ~ nFeature + nCount + region +APOBEC3A +APOBEC3B, data = df))[["coefficients"]]
@@ -223,7 +223,7 @@ anova(m1, m2)
 #------APOBEC Expression - Tabula Sapiens -----------
 # Dataset downloaded from https://cellxgene.cziscience.com/collections/e5f58829-1a66-40b5-a624-9046778e74f5# Load data
 # Load data
-all<-readRDS("/Users/yw2/Documents/FARM/public/scRNAseq/various/local.rds")
+all<-readRDS("/Users/yw2/Documents/FARM/public/scRNAseq/various/epithelial.rds")
 Key(all)
 all@assays$RNA@key <- "rna_"
 all@meta.data[["cell_type"]]
@@ -261,13 +261,13 @@ df$cell_type=c(as.character(Large_Intestine_all@meta.data$cell_type),as.characte
 df$tissue_type=c(as.character(Large_Intestine_all@meta.data$cell_type),as.character(Small_Intestine_all@meta.data$cell_type))
 df = df[grep('10X',rownames(df)),]
 
-sum(df$APOBEC3B[which(df$region=='SmallInt')])
+sum(df$APOBEC1[which(df$region=='SmallInt')])
 sum(df$region=='SmallInt')
-mean(df$APOBEC3B[which(df$region=='SmallInt')])
+mean(df$APOBEC1[which(df$region=='SmallInt')])
 
-sum(df$APOBEC3B[which(df$region=='LargeInt')])
+sum(df$APOBEC1[which(df$region=='LargeInt')])
 sum(df$region=='LargeInt')
-mean(df$APOBEC3B[which(df$region=='LargeInt')])
+mean(df$APOBEC1[which(df$region=='LargeInt')])
 
 mean(df$APOBEC1[which(df$region=='SmallInt')]) / mean(df$APOBEC1[which(df$region=='LargeInt')])
 
@@ -287,7 +287,7 @@ df$cell_type=c(as.character(Large_Intestine_all@meta.data$cell_type),as.characte
 df$tissue_type=c(as.character(Large_Intestine_all@meta.data$cell_type),as.character(Small_Intestine_all@meta.data$cell_type))
 df = df[grep('10X',rownames(df)),]
 
-summary(m1 <- glm.nb(APOBEC3B ~ nFeature + nCount + region +APOBEC3A +APOBEC1, data = df))[["coefficients"]]
+summary(m1 <- glm.nb(APOBEC1 ~ nFeature + nCount + region +APOBEC3B +APOBEC3A, data = df, maxit = 500))[["coefficients"]]
 m2 <- update(m1, . ~ . - region)
 anova(m1, m2)
 
@@ -303,7 +303,7 @@ median(Small_Intestine_subset@meta.data[["nCount_RNA"]])
 median(Small_Intestine_subset@meta.data[["nFeature_RNA"]])
 dim(Small_Intestine_subset) 
 
-# APOBEC expression in epithelium. Change the gene names as needed.
+# APOBEC expression in stem cells. Change the gene names as needed.
 APOBEC_LargeInt = Large_Intestine_subset@assays$RNA[Large_Intestine_subset@assays[["RNA"]]@meta.features[["feature_name"]] %in% c('APOBEC1','APOBEC3A','APOBEC3B'),]
 APOBEC_SmallInt = Small_Intestine_subset@assays$RNA[Small_Intestine_subset@assays[["RNA"]]@meta.features[["feature_name"]] %in% c('APOBEC1','APOBEC3A','APOBEC3B'),]
 rownames(APOBEC_LargeInt) = c('APOBEC1','APOBEC3A','APOBEC3B')
@@ -316,15 +316,15 @@ df$nCount=c(Large_Intestine_subset@meta.data$nCount_RNA,Small_Intestine_subset@m
 df$region=as.factor(df$region)
 df = df[grep('10X',rownames(df)),]
 
-sum(df$APOBEC3B[which(df$region=='SmallInt')])
+sum(df$APOBEC1[which(df$region=='SmallInt')])
 sum(df$region=='SmallInt')
-sum(df$APOBEC3B[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')
+sum(df$APOBEC1[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')
 
-sum(df$APOBEC3B[which(df$region=='LargeInt')])
+sum(df$APOBEC1[which(df$region=='LargeInt')])
 sum(df$region=='LargeInt')
-sum(df$APOBEC3B[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')
+sum(df$APOBEC1[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')
 
-(sum(df$APOBEC1[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')) / (sum(df$APOBEC3A[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')) 
+(sum(df$APOBEC1[which(df$region=='SmallInt')])/sum(df$region=='SmallInt')) / (sum(df$APOBEC1[which(df$region=='LargeInt')])/sum(df$region=='LargeInt')) 
 
 # Whether APOBEC expression level is different in small vs. large intestine epithelial stem/transit amplifying cells. Change the gene names as needed
 APOBEC_LargeInt = Large_Intestine_subset@assays$RNA@counts[Large_Intestine_subset@assays[["RNA"]]@meta.features[["feature_name"]] %in% c('APOBEC1','APOBEC3A','APOBEC3B'),]
@@ -339,6 +339,6 @@ df$nCount=c(Large_Intestine_subset@meta.data$nCount_RNA,Small_Intestine_subset@m
 df$region=as.factor(df$region)
 df = df[grep('10X',rownames(df)),]
 
-summary(m1 <- glm.nb(APOBEC3B ~ nFeature + nCount + +APOBEC1 +APOBEC3A+ region , data = df, maxit=1000))[["coefficients"]]
+summary(m1 <- glm.nb(APOBEC3B ~ nFeature + nCount +APOBEC1 +APOBEC3A+ region , data = df, maxit=1000))[["coefficients"]]
 m2 <- update(m1, . ~ . - region)
 anova(m1, m2)
