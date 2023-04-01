@@ -1,6 +1,12 @@
 # APOBEC mutagenesis is a common process in normal human small intestine. Wang et al.
 
-Scripts used to reproduce the analyses of the manuscript are available at: https://github.com/YichenWang1/small_bowel. Please contact Yichen (yw2@sanger.ac.uk) if you have any questions and enquires.
+Scripts used to reproduce the analyses of the manuscript:
+
+Wang, Y., Robinson, P.S., Coorens, T.H.H. et al. APOBEC mutagenesis is a common process in normal human small intestine. *Nat Genet* __55__, 246–254 (2023). https://doi.org/10.1038/s41588-022-01296-5
+
+Please contact Yichen (yw2@sanger.ac.uk) if you have any questions and enquires.
+
+
 
 ## Dataset
 
