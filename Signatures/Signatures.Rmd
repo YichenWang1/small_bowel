@@ -99,7 +99,7 @@ plot_comp_distn(mut_example_multi, cat_names=trinuc_context,
 
 ### 3. Deconvolute HDP signatures
 ```{r deconvolution1, fig.width = 8, fig.height = 4, warning = FALSE}
-# Load reference signatures
+# Load reference signatures, this can be downloaded from COSMIC website
 ref=read.csv("../../public/pcawg_signatures_v3.1.txt", header=T, stringsAsFactors = F, sep='\t')
 features<-lapply(1:dim(ref)[1],function(idx){
   paste(unlist(strsplit(as.character(ref[idx,2]),""))[1],"[",as.character(ref[idx,1]),"]",unlist(strsplit(as.character(ref[idx,2]),""))[3],sep = "")
@@ -118,8 +118,8 @@ rownames(ref)<-features
 mut.cols = rep(c("dodgerblue","black","red","grey70","olivedrab3","plum2"),each=16)
 
 # Load HDP signatures
-hdp_exposures=mut_example_multi@comp_dp_distn[["mean"]][2:416,]
-hdp_sigs=t(mut_example_multi@comp_categ_distn[["mean"]][2:10,])
+hdp_exposures=mut_example_multi@comp_dp_distn[["mean"]][2:nrow(mut_example_multi@comp_dp_distn[["mean"]]),]
+hdp_sigs=t(mut_example_multi@comp_categ_distn[["mean"]][2:nrow(mut_example_multi@comp_categ_distn[["mean"]]),])
 rownames(hdp_sigs)<-features
 
 input_for_hdp<-read.table('./input_for_hdp_without_brunners_glands.txt',check.names = F)

@@ -11,7 +11,7 @@ output:
 This workflow includes instructions for 1) running HDP chains, 2) extracting HDP signatures, 3) deconvoluting HDP signatures to PCAWG reference, 4) fitting reference sigantures for each samples, and 5) plotting signatures onto phylogenetic trees.
 
 
-```r
+``` r
 options(stringsAsFactors = F)
 library(hdp)
 library(RColorBrewer)
@@ -24,7 +24,7 @@ library(lattice)
 
 This part was submitted to cluster using the following shell script:
 
-```r
+``` r
 for i in {1..10}
 do
      bsub  -q normal -o $i.log -e $i.err -n1 -R"span[hosts=1] select[mem>2000] rusage[mem=2000]" -M2000 /software/R-3.6.1/bin/Rscript hdp_noprior.R [inupt_matrix] $i [output_prefix]
@@ -32,7 +32,7 @@ done
 ```
 
 
-```r
+``` r
 mut_file<-commandArgs(T)[1]
 iter <-as.numeric(commandArgs(T)[2])
 out <-as.character(commandArgs(T)[3])
@@ -67,7 +67,7 @@ saveRDS(chlist, paste0(out,iter,".rds"))
 
 ### 2. Visualise HDP results
 
-```r
+``` r
 chlist <- vector("list", 10)
 for (i in 1:10){
   chlist[[i]] <- readRDS(paste0("./chlist_noprior_without_brunners_glands_",i,".rds"))
@@ -78,21 +78,21 @@ mut_example_multi <- hdp_multi_chain(chlist)
 lapply(chains(mut_example_multi), plot_lik, bty="L", start = 1000)
 ```
 
-```r
+``` r
 lapply(chains(mut_example_multi), plot_numcluster, bty="L")
 ```
 
-```r
+``` r
 lapply(chains(mut_example_multi), plot_data_assigned, bty="L")
 ```
 
-```r
+``` r
 mut_example_multi <- hdp_extract_components(mut_example_multi)
 plot_comp_size(mut_example_multi, bty="L")
 ```
 
 
-```r
+``` r
 sub_vec = c("C>A","C>G","C>T","T>A","T>C","T>G")
 ctx_vec = paste(rep(c("A","C","G","T"),each=4),rep(c("A","C","G","T"),times=4),sep="-")
 full_vec = paste(rep(sub_vec,each=16),rep(ctx_vec,times=6),sep=",")
@@ -112,8 +112,8 @@ plot_comp_distn(mut_example_multi, cat_names=trinuc_context,
 
 ### 3. Deconvolute HDP signatures
 
-```r
-# Load reference signatures
+``` r
+# Load reference signatures, this can be downloaded from COSMIC website
 ref=read.csv("../../public/pcawg_signatures_v3.1.txt", header=T, stringsAsFactors = F, sep='\t')
 features<-lapply(1:dim(ref)[1],function(idx){
   paste(unlist(strsplit(as.character(ref[idx,2]),""))[1],"[",as.character(ref[idx,1]),"]",unlist(strsplit(as.character(ref[idx,2]),""))[3],sep = "")
@@ -132,8 +132,8 @@ rownames(ref)<-features
 mut.cols = rep(c("dodgerblue","black","red","grey70","olivedrab3","plum2"),each=16)
 
 # Load HDP signatures
-hdp_exposures=mut_example_multi@comp_dp_distn[["mean"]][2:416,]
-hdp_sigs=t(mut_example_multi@comp_categ_distn[["mean"]][2:10,])
+hdp_exposures=mut_example_multi@comp_dp_distn[["mean"]][2:nrow(mut_example_multi@comp_dp_distn[["mean"]]),]
+hdp_sigs=t(mut_example_multi@comp_categ_distn[["mean"]][2:nrow(mut_example_multi@comp_categ_distn[["mean"]]),])
 rownames(hdp_sigs)<-features
 
 input_for_hdp<-read.table('./input_for_hdp_without_brunners_glands.txt',check.names = F)
@@ -169,7 +169,7 @@ levelplot(t(cosine_matrix[dim(cosine_matrix)[1]:1,]),col.regions=color.palette, 
 ![](Signatures_files/figure-html/deconvolution1-1.png)<!-- -->
 
 
-```r
+``` r
 # First iteration; decomposed hdp sigs into all suspected sigs 
 gdsigs=c("SBS1","SBS2", "SBS5", "SBS13","SBS18","SBS88","SBS35","SBS40", "SBS41","SBS17b")
 
@@ -196,7 +196,7 @@ for(n in 1:nrow(cosine_matrix)){
 ## [1] "Signature9: SBS17b"
 ```
 
-```r
+``` r
 signature_fractionR1 = matrix(NA,nrow=nrow(signatures),ncol=length(colnames(hdp_sigs)))
 rownames(signature_fractionR1) = rownames(signatures)
 colnames(signature_fractionR1) = colnames(hdp_sigs)
@@ -229,7 +229,7 @@ levelplot((signature_fractionR1[nrow(signature_fractionR1):1,]),col.regions=colo
 
 ![](Signatures_files/figure-html/deconvolution2-1.png)<!-- -->
 
-```r
+``` r
 # Select which signatures to decompose into reference signatures
 sigs_to_deconv=names(sigs_to_decompose)[sigs_to_decompose!=1]
 # Hard-code the dirty SBS1 signatures(HDP Siganture 1) to be decomposed
@@ -277,7 +277,7 @@ sigs_deconv_R2
 ## [1] "SBS17b"
 ```
 
-```r
+``` r
 # Combine decomposed and undecomposed signatrues
 ref_sigs_R2=sort(unique(unlist(sigs_deconv_R2)))
 signature_fractionR2=matrix(0,ncol=length(colnames(hdp_sigs)),nrow=length(ref_sigs_R2))
@@ -361,7 +361,7 @@ for(s in colnames(hdp_sigs)){
 
 ![](Signatures_files/figure-html/deconvolution2-6.png)<!-- -->
 
-```r
+``` r
 saveRDS(sigs_deconv_R2,"./sigs/hdp2refsigs.Rdata")
 final_sigs=ref[,ref_sigs_R2]
 
@@ -371,7 +371,7 @@ write.table(signature_fractionR2,"./sigs/signature_fractionR2.txt",quote = F)
 
 ### 4. Refit reference signatures
 
-```r
+``` r
 library(sigfit)
 library(RColorBrewer)
 library(ape)
@@ -455,7 +455,7 @@ for (patient in patients[1:length(patients)]){
 
 ### 5. Plot signatures onto phylogenetic trees
 
-```r
+``` r
 for(patient in patients){
   tree=try(read.tree(paste0("./tree/",patient,"_snp_tree_with_branch_length.tree")))
   tree_df=fortify(tree)
